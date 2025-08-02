@@ -9,7 +9,7 @@ interface SpotifyPlaylistData {
 
 export default function PlaylistSection() {
   // CONFIGURE AQUI O LINK DA SUA PLAYLIST DO SPOTIFY
-  const SPOTIFY_PLAYLIST_URL = 'https://open.spotify.com/playlist/7H3byRpY1q6DTUzz3lKDiw?si=M98wmogyRreck4sCz4HgZA&pi=LeZfK0QUSEqS5';
+  const SPOTIFY_PLAYLIST_URL = 'https://open.spotify.com/playlist/7H3byRpY1q6DTUzz3lKDiw?si=TDfS3uv_SrSJgFBh5-c3gg&pi=trG8Njq1TGuFu';
   
   const [playlistData, setPlaylistData] = useState<SpotifyPlaylistData | null>(null);
   const [loading, setLoading] = useState(true);
