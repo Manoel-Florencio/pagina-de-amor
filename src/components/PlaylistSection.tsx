@@ -1,144 +1,118 @@
-import React, { useState, useEffect } from 'react';
-import { Music, Heart, Play, ExternalLink } from 'lucide-react';
-
-interface SpotifyPlaylistData {
-  title: string;
-  thumbnail_url: string;
-  html: string;
-}
+import React from "react";
+import { Music, Heart, ExternalLink } from "lucide-react";
 
 export default function PlaylistSection() {
   // CONFIGURE AQUI O LINK DA SUA PLAYLIST DO SPOTIFY
-  const SPOTIFY_PLAYLIST_URL = 'https://open.spotify.com/playlist/7H3byRpY1q6DTUzz3lKDiw?si=TDfS3uv_SrSJgFBh5-c3gg&pi=trG8Njq1TGuFu';
-  
-  const [playlistData, setPlaylistData] = useState<SpotifyPlaylistData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const SPOTIFY_PLAYLIST_URL =
+    "https://open.spotify.com/playlist/7H3byRpY1q6DTUzz3lKDiw?si=SxtPW4wQTu6sT9Mm13g7og&pi=7w9Bg0PvQ0Cxs";
 
-  // Função para buscar dados da playlist usando oEmbed API
-  const fetchPlaylistData = async (url: string) => {
-    setLoading(true);
-    setError('');
-    
-    try {
-      const encodedUrl = encodeURIComponent(url);
-      const response = await fetch(`https://open.spotify.com/oembed?url=${encodedUrl}`);
-      
-      if (!response.ok) {
-        throw new Error('Não foi possível carregar os dados da playlist');
-      }
-      
-      const data = await response.json();
-      setPlaylistData(data);
-    } catch (err) {
-      setError('Erro ao carregar playlist. Verifique se o link está correto.');
-      console.error('Erro ao buscar dados da playlist:', err);
-    } finally {
-      setLoading(false);
-    }
+  // Extrair o ID da playlist do URL para criar o embed
+  const getPlaylistId = (url: string) => {
+    const match = url.match(/playlist\/([a-zA-Z0-9]+)/);
+    return match ? match[1] : null;
   };
 
-  // Carregar dados da playlist automaticamente quando o componente for montado
-  useEffect(() => {
-    if (SPOTIFY_PLAYLIST_URL) {
-      fetchPlaylistData(SPOTIFY_PLAYLIST_URL);
-    }
-  }, []);
+  const playlistId = getPlaylistId(SPOTIFY_PLAYLIST_URL);
 
   // Função para abrir a playlist no Spotify
   const openInSpotify = () => {
-    window.open(SPOTIFY_PLAYLIST_URL, '_blank');
+    window.open(SPOTIFY_PLAYLIST_URL, "_blank");
   };
 
   return (
     <section className="py-20 bg-gradient-to-br from-[#1a1a2e] via-[#0e0e12] to-[#1a1a2e]">
       <div className="container mx-auto px-6">
+        {/* Cabeçalho da seção */}
         <div className="text-center mb-16">
           <Music className="w-16 h-16 text-[#d16b86] mx-auto mb-6 animate-bounce" />
           <h2 className="text-4xl md:text-5xl font-bold text-[#f9f4f4] mb-4">
-            Playlist do Nosso Amor
+            Ouça o que me inspira
           </h2>
-          <p className="text-xl text-[#cfcfcf] italic">
-            "Cada batida dessas músicas é um pedaço da gente."
+          <p className="text-xl text-[#cfcfcf] italic max-w-2xl mx-auto">
+            "Cada batida dessas músicas é um pedaço da nossa história. Uma
+            trilha sonora que embala nossos momentos especiais."
           </p>
         </div>
 
         <div className="max-w-4xl mx-auto">
-          {/* Estado de carregamento */}
-          {loading && (
-            <div className="text-center py-12">
-              <div className="animate-spin w-12 h-12 border-4 border-[#d16b86] border-t-transparent rounded-full mx-auto mb-4"></div>
-              <p className="text-[#cfcfcf] text-lg">Carregando playlist...</p>
-            </div>
-          )}
+          {/* Container principal da playlist */}
+          <div className="bg-gradient-to-r from-[#5e2a3a]/20 to-[#d16b86]/20 backdrop-blur-sm rounded-3xl p-8 border border-white/10 shadow-2xl">
+            {/* Título e descrição da playlist */}
+            <div className="text-center mb-8">
+              <h3 className="text-2xl md:text-3xl font-bold text-[#f9f4f4] mb-3">
+                Playlist do Nosso Amor
+              </h3>
+              <p className="text-[#cfcfcf] text-lg mb-6">
+                Uma coleção especial de músicas que definem nossos momentos
+                juntos
+              </p>
 
-          {/* Estado de erro */}
-          {error && !loading && (
-            <div className="text-center py-12">
-              <Heart className="w-16 h-16 text-red-400 mx-auto mb-4" />
-              <p className="text-red-400 text-lg mb-2">{error}</p>
-              <p className="text-[#cfcfcf]/70 text-sm">
-                Verifique se o link da playlist está correto no código.
+              {/* Botão para abrir no Spotify */}
+              <button
+                onClick={openInSpotify}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-[#1DB954] hover:bg-[#1ed760] text-white rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg"
+              >
+                <ExternalLink className="w-5 h-5" />
+                Abrir no Spotify
+              </button>
+            </div>
+
+            {/* Embed direto do Spotify */}
+            {playlistId ? (
+              <div className="relative">
+                {/* Container responsivo para o iframe */}
+                <div className="bg-black/20 rounded-2xl p-4 backdrop-blur-sm border border-white/5">
+                  <iframe
+                    src={`https://open.spotify.com/embed/playlist/${playlistId}?utm_source=generator&theme=0`}
+                    width="100%"
+                    height="380"
+                    frameBorder="0"
+                    allowFullScreen
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                    loading="lazy"
+                    className="
+                     rounded-xl
+                     w-full
+                     h-[500px]          
+                     md:h-[400px]       
+                     sm:h-[300px] "
+                     title="Playlist do Spotify"
+                  />
+                </div>
+
+                {/* Efeitos visuais decorativos */}
+                <div className="absolute -top-4 -left-4 w-8 h-8 bg-[#d16b86] rounded-full opacity-60 animate-pulse"></div>
+                <div className="absolute -bottom-4 -right-4 w-6 h-6 bg-[#1DB954] rounded-full opacity-40 animate-pulse delay-1000"></div>
+              </div>
+            ) : (
+              /* Fallback caso não consiga extrair o ID */
+              <div className="text-center py-12">
+                <Heart className="w-16 h-16 text-[#d16b86] mx-auto mb-4" />
+                <p className="text-[#cfcfcf] text-lg mb-2">
+                  Não foi possível carregar a playlist
+                </p>
+                <p className="text-[#cfcfcf]/70 text-sm">
+                  Verifique se o link da playlist está correto no código
+                </p>
+                <button
+                  onClick={openInSpotify}
+                  className="mt-4 inline-flex items-center gap-2 px-6 py-3 bg-[#1DB954] hover:bg-[#1ed760] text-white rounded-full font-semibold transition-all duration-300"
+                >
+                  <ExternalLink className="w-5 h-5" />
+                  Abrir Playlist
+                </button>
+              </div>
+            )}
+
+            {/* Seção adicional com informações */}
+            <div className="mt-8 text-center">
+              <p className="text-[#cfcfcf]/80 text-sm">
+                💝 Criado com amor para momentos especiais
               </p>
             </div>
-          )}
-
-          {/* Exibição da playlist do Spotify */}
-          {playlistData && !loading && (
-            <>
-              <div className="bg-gradient-to-r from-[#5e2a3a] to-[#d16b86] rounded-3xl p-8 mb-8 shadow-2xl">
-                <div className="flex flex-col sm:flex-row items-center gap-6 text-white">
-                  {/* Imagem da playlist */}
-                  <div className="flex-shrink-0">
-                    <img
-                      src={playlistData.thumbnail_url}
-                      alt={playlistData.title}
-                      className="w-24 h-24 sm:w-32 sm:h-32 rounded-xl shadow-lg object-cover"
-                    />
-                  </div>
-                  
-                  {/* Informações da playlist */}
-                  <div className="flex-1 text-center sm:text-left">
-                    <h3 className="text-2xl font-bold mb-2">{playlistData.title}</h3>
-                    <p className="text-white/80 mb-4">Playlist do Spotify</p>
-                    
-                    {/* Botões de ação */}
-                    <div className="flex flex-col sm:flex-row gap-3">
-                      <button
-                        onClick={openInSpotify}
-                        className="flex items-center justify-center gap-2 px-6 py-3 bg-[#1DB954] hover:bg-[#1ed760] text-white rounded-full font-semibold transition-all duration-300 transform hover:scale-105"
-                      >
-                        <Play className="w-5 h-5" />
-                        Ouvir no Spotify
-                      </button>
-                      
-                      <button
-                        onClick={openInSpotify}
-                        className="flex items-center justify-center gap-2 px-6 py-3 bg-white/20 hover:bg-white/30 text-white rounded-full font-semibold transition-all duration-300"
-                      >
-                        <ExternalLink className="w-5 h-5" />
-                        Abrir Playlist
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Embed da playlist */}
-              <div className="bg-white/5 backdrop-blur-sm rounded-3xl p-6 mb-8 border border-white/10">
-                <h4 className="text-lg font-semibold text-[#f9f4f4] mb-4 text-center">
-                  Preview da Playlist
-                </h4>
-                <div 
-                  className="w-full"
-                  dangerouslySetInnerHTML={{ __html: playlistData.html }}
-                />
-              </div>
-            </>
-          )}
+          </div>
         </div>
       </div>
     </section>
   );
 }
-
